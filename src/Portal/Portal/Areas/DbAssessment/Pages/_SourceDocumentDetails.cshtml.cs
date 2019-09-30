@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Portal.Pages.DbAssessment
+namespace Portal.Areas.DbAssessment.Pages
 {
     public class _SourceDocumentDetailsModel : PageModel
     {

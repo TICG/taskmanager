@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Portal.Pages.DbAssessment
+namespace Portal.Areas.DbAssessment.Pages
 {
     public class _AssignTaskModel : PageModel
     {

@@ -1,4 +1,4 @@
-﻿namespace Portal.Pages.DbAssessment
+﻿namespace Portal.Areas.DbAssessment.Pages
 {
     public class Assessor
     {

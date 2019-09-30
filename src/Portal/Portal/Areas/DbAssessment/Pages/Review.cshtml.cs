@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using WorkflowDatabase.EF;
 using WorkflowDatabase.EF.Models;
 
-namespace Portal.Pages.DbAssessment
+namespace Portal.Areas.DbAssessment.Pages
 {
     public class ReviewModel : PageModel
     {

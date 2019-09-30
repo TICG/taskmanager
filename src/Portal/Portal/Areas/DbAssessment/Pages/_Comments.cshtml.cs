@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WorkflowDatabase.EF.Models;
 
-namespace Portal.Pages.DbAssessment
+namespace Portal.Areas.DbAssessment.Pages
 {
     public class _CommentsModel : PageModel
     {
