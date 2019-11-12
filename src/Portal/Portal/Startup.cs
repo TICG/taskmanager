@@ -7,6 +7,9 @@ using AutoMapper;
 using Common.Factories;
 using Common.Factories.Interfaces;
 using Common.Helpers;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -62,7 +65,6 @@ namespace Portal
                 .Bind(Configuration.GetSection("urls"));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
             var isLocalDevelopment = ConfigHelpers.IsLocalDevelopment;
 
             var startupConfig = new StartupConfig();
@@ -73,7 +75,7 @@ namespace Portal
                 isLocalDevelopment ? startupConfig.LocalDbServer : startupConfig.WorkflowDbServer, startupConfig.WorkflowDbName);
 
             services.AddDbContext<WorkflowDbContext>((serviceProvider, options) =>
-                options.UseSqlServer(workflowDbConnectionString));
+                    options.UseSqlServer(workflowDbConnectionString));
 
             if (isLocalDevelopment)
             {
@@ -88,7 +90,7 @@ namespace Portal
             Configuration.GetSection("K2RestApi").Bind(startupSecretConfig);
 
             services.AddHttpClient<IDataServiceApiClient, DataServiceApiClient>()
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5));
+                            .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
             services.AddHttpClient<IEventServiceApiClient, EventServiceApiClient>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5));
@@ -109,6 +111,25 @@ namespace Portal
             var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new TaskViewModelMappingProfile()); });
             var mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+                .AddAzureAD(options =>
+                {
+                    options.ClientId = "CLIENT ID";
+                    options.Instance = "https://ukho.onmicrosoft.com";
+                    options.CallbackPath = "/signin-oidc";
+                    options.TenantId = "TENANT ID";
+                    options.Domain = "ukho.onmicrosoft.com";
+
+                });
+
+
+            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            {
+                options.Authority = "https://login.microsoftonline.com/{TENANT_ID}/v2.0/";   // Replace TENANT_ID
+                options.TokenValidationParameters.ValidateIssuer = false; // accept several tenants (here simplified for development - TODO)
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -124,12 +145,16 @@ namespace Portal
                 app.UseHsts();
             }
 
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
             app.UseRequestLocalization();
             app.UseAzureAppConfiguration();
+
+            app.UseAuthentication();
+
             app.UseMvc();
         }
     }

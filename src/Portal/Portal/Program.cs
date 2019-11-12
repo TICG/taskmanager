@@ -1,19 +1,22 @@
-﻿using Common.Helpers;
-
+﻿using System;
+using System.Net.Http;
+using Common.Helpers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.Logging;
-
-using System;
+using Microsoft.Graph;
 
 
 namespace Portal
 {
     public class Program
     {
+        private static GraphServiceClient _graphServiceClient;
+        private static HttpClient _httpClient;
+
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
@@ -21,6 +24,7 @@ namespace Portal
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                //.UseUrls("https://localhost:44363")
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration(builder =>
                 {
